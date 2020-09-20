@@ -1,0 +1,5 @@
+Heart failure:
+https://www.kaggle.com/andrewmvd/heart-failure-clinical-data
+
+Wine quality:
+kaggle.com/uciml/red-wine-quality-cortez-et-al-2009

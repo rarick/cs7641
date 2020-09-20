@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import log_loss
@@ -75,7 +76,7 @@ class NeuralNetwork(object):
 class Boosting(object):
 
     def __init__(self, alpha):
-        self.rf = RandomForestClassifier(ccp_alpha=alpha)
+        self.rf = RandomForestClassifier(criterion='entropy', ccp_alpha=alpha)
 
 
     def train(self, dataset):
@@ -130,3 +131,12 @@ class NearestNeighbors(object):
     def score(self, dataset):
         outputs = self.predict(dataset.iloc[:, :-1])
         return (dataset.iloc[:, -1] == outputs).mean()
+
+
+class ColorPopper(object):
+
+    def __init__(self):
+        self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+    def pop(self):
+        return self.colors.pop(0)

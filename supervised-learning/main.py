@@ -44,27 +44,37 @@ def decision_tree(wine_train, wine_test, heart_train, heart_test):
     heart_test_results = pd.DataFrame.from_records(heart_test_scores)
     wine_test_results = pd.DataFrame.from_records(wine_test_scores)
 
-    heart_train_results.plot.scatter(x='alpha', y='accuracy')
+    colors = alg.ColorPopper()
+    ax = heart_train_results.plot.scatter(x='alpha',
+                                          y='accuracy',
+                                          color=colors.pop(),
+                                          label='train')
+    heart_test_results.plot.scatter(x='alpha',
+                                    y='accuracy',
+                                    ax=ax,
+                                    color=colors.pop(),
+                                    label='test')
     plt.ylim(bottom=0, top=1)
     plt.grid()
-    plt.title('Heart Failure Decision Tree Training Accurarcy')
-    plt.savefig('./dt_heart_train.png')
-    wine_train_results.plot.scatter(x='alpha', y='accuracy')
-    plt.ylim(bottom=0, top=1)
-    plt.grid()
-    plt.title('Wine Quality Decision Tree Training Accurarcy')
-    plt.savefig('./dt_wine_train.png')
+    plt.title('Heart Failure Decision Tree Train/Test Accurarcy')
+    plt.legend(loc='lower left')
+    plt.savefig('./dt_heart.png')
 
-    heart_test_results.plot.scatter(x='alpha', y='accuracy')
+    colors = alg.ColorPopper()
+    ax = wine_train_results.plot.scatter(x='alpha',
+                                         y='accuracy',
+                                         color=colors.pop(),
+                                         label='train')
+    wine_test_results.plot.scatter(x='alpha',
+                                   y='accuracy',
+                                   ax=ax,
+                                   color=colors.pop(),
+                                   label='test')
     plt.ylim(bottom=0, top=1)
     plt.grid()
-    plt.title('Heart Failure Decision Tree Test Accurarcy')
-    plt.savefig('./dt_heart_test.png')
-    wine_test_results.plot.scatter(x='alpha', y='accuracy')
-    plt.ylim(bottom=0, top=1)
-    plt.grid()
-    plt.title('Wine Quality Decision Tree Test Accurarcy')
-    plt.savefig('./dt_wine_test.png')
+    plt.title('Wine Quality Decision Tree Train/Test Accurarcy')
+    plt.legend(loc='lower left')
+    plt.savefig('./dt_wine.png')
 
 
 def neural_network(wine_train, wine_test, heart_train, heart_test):
@@ -103,14 +113,14 @@ def neural_network(wine_train, wine_test, heart_train, heart_test):
     wine_test_results = pd.DataFrame.from_records(wine_test_scores)
 
     def nn_plot(df):
-        colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+        colors = alg.ColorPopper()
         fig, ax = plt.subplots()
         for key, grp in df.groupby(['hidden_layers']):
             ax = grp.plot.scatter(ax=ax,
                                   x='hidden_size',
                                   y='accuracy',
                                   label=f'{key} hidden layers',
-                                  color=colors.pop(0))
+                                  color=colors.pop())
         plt.legend(loc='lower left')
         plt.show()
 
@@ -167,27 +177,37 @@ def boosting(wine_train, wine_test, heart_train, heart_test):
     heart_test_results = pd.DataFrame.from_records(heart_test_scores)
     wine_test_results = pd.DataFrame.from_records(wine_test_scores)
 
-    heart_train_results.plot.scatter(x='alpha', y='accuracy')
+    colors = alg.ColorPopper()
+    ax = heart_train_results.plot.scatter(x='alpha',
+                                          y='accuracy',
+                                          color=colors.pop(),
+                                          label='train')
+    heart_test_results.plot.scatter(x='alpha',
+                                    y='accuracy',
+                                    ax=ax,
+                                    color=colors.pop(),
+                                    label='test')
     plt.ylim(bottom=0, top=1)
     plt.grid()
-    plt.title('Heart Failure Random Forest Training Accurarcy')
-    plt.savefig('./boost_heart_train.png')
-    wine_train_results.plot.scatter(x='alpha', y='accuracy')
-    plt.ylim(bottom=0, top=1)
-    plt.grid()
-    plt.title('Wine Quality Random Forest Training Accurarcy')
-    plt.savefig('./boost_wine_train.png')
+    plt.title('Heart Failure Random Forest Train/Test Accurarcy')
+    plt.legend(loc='lower left')
+    plt.savefig('./boost_heart.png')
 
-    heart_test_results.plot.scatter(x='alpha', y='accuracy')
+    colors = alg.ColorPopper()
+    ax = wine_train_results.plot.scatter(x='alpha',
+                                         y='accuracy',
+                                         color=colors.pop(),
+                                         label='train')
+    wine_test_results.plot.scatter(x='alpha',
+                                   y='accuracy',
+                                   ax=ax,
+                                   color=colors.pop(),
+                                   label='test')
     plt.ylim(bottom=0, top=1)
     plt.grid()
-    plt.title('Heart Failure Random Forest Test Accurarcy')
-    plt.savefig('./boost_heart_test.png')
-    wine_test_results.plot.scatter(x='alpha', y='accuracy')
-    plt.ylim(bottom=0, top=1)
-    plt.grid()
-    plt.title('Wine Quality Random Forest Test Accurarcy')
-    plt.savefig('./boost_wine_test.png')
+    plt.title('Wine Quality Random Forest Train/Test Accurarcy')
+    plt.legend(loc='lower left')
+    plt.savefig('./boost_wine.png')
 
 
 def svm(wine_train, wine_test, heart_train, heart_test):
@@ -220,23 +240,37 @@ def svm(wine_train, wine_test, heart_train, heart_test):
     heart_test_results = pd.DataFrame.from_records(heart_test_scores)
     wine_test_results = pd.DataFrame.from_records(wine_test_scores)
 
-    heart_train_results.plot.bar(x='kernel', y='accuracy')
+    colors = alg.ColorPopper()
+    ax = heart_train_results.plot.bar(x='kernel',
+                                          y='accuracy',
+                                          color=colors.pop(),
+                                          label='train')
+    heart_test_results.plot.bar(x='kernel',
+                                    y='accuracy',
+                                    ax=ax,
+                                    color=colors.pop(),
+                                    label='test')
     plt.ylim(bottom=0, top=1)
-    plt.title('Heart Failure SVM Training Accurarcy')
-    plt.savefig('./svm_heart_train.png')
-    wine_train_results.plot.bar(x='kernel', y='accuracy')
-    plt.ylim(bottom=0, top=1)
-    plt.title('Wine Quality SVM Training Accurarcy')
-    plt.savefig('./svm_wine_train.png')
+    plt.grid()
+    plt.title('Heart Failure SVM Train/Test Accurarcy')
+    plt.legend(loc='lower left')
+    plt.savefig('./svm_heart.png')
 
-    heart_test_results.plot.bar(x='kernel', y='accuracy')
+    colors = alg.ColorPopper()
+    ax = wine_train_results.plot.bar(x='kernel',
+                                     y='accuracy',
+                                     color=colors.pop(),
+                                     label='train')
+    wine_test_results.plot.bar(x='kernel',
+                               y='accuracy',
+                               ax=ax,
+                               color=colors.pop(),
+                               label='test')
     plt.ylim(bottom=0, top=1)
-    plt.title('Heart Failure SVM Test Accurarcy')
-    plt.savefig('./svm_heart_test.png')
-    wine_test_results.plot.bar(x='kernel', y='accuracy')
-    plt.ylim(bottom=0, top=1)
-    plt.title('Wine Quality SVM Test Accurarcy')
-    plt.savefig('./svm_wine_test.png')
+    plt.grid()
+    plt.title('Wine Quality SVM Train/Test Accurarcy')
+    plt.legend(loc='lower left')
+    plt.savefig('./svm_wine.png')
 
 
 def knn(wine_train, wine_test, heart_train, heart_test):
@@ -269,27 +303,37 @@ def knn(wine_train, wine_test, heart_train, heart_test):
     heart_test_results = pd.DataFrame.from_records(heart_test_scores)
     wine_test_results = pd.DataFrame.from_records(wine_test_scores)
 
-    heart_train_results.plot.scatter(x='k', y='accuracy')
+    colors = alg.ColorPopper()
+    ax = heart_train_results.plot.scatter(x='k',
+                                          y='accuracy',
+                                          color=colors.pop(),
+                                          label='train')
+    heart_test_results.plot.scatter(x='k',
+                                    y='accuracy',
+                                    ax=ax,
+                                    color=colors.pop(),
+                                    label='test')
     plt.ylim(bottom=0, top=1)
     plt.grid()
-    plt.title('Heart Failure KNN Training Accurarcy')
-    plt.savefig('./knn_heart_train.png')
-    wine_train_results.plot.scatter(x='k', y='accuracy')
-    plt.ylim(bottom=0, top=1)
-    plt.grid()
-    plt.title('Wine Quality KNN Training Accurarcy')
-    plt.savefig('./knn_wine_train.png')
+    plt.title('Heart Failure KNN Train/Test Accurarcy')
+    plt.legend(loc='lower left')
+    plt.savefig('./knn_heart.png')
 
-    heart_test_results.plot.scatter(x='k', y='accuracy')
+    colors = alg.ColorPopper()
+    ax = wine_train_results.plot.scatter(x='k',
+                                         y='accuracy',
+                                         color=colors.pop(),
+                                         label='train')
+    wine_test_results.plot.scatter(x='k',
+                                   y='accuracy',
+                                   ax=ax,
+                                   color=colors.pop(),
+                                   label='test')
     plt.ylim(bottom=0, top=1)
     plt.grid()
-    plt.title('Heart Failure KNN Test Accurarcy')
-    plt.savefig('./knn_heart_test.png')
-    wine_test_results.plot.scatter(x='k', y='accuracy')
-    plt.ylim(bottom=0, top=1)
-    plt.grid()
-    plt.title('Wine Quality KNN Test Accurarcy')
-    plt.savefig('./knn_wine_test.png')
+    plt.title('Wine Quality KNN Train/Test Accurarcy')
+    plt.legend(loc='lower left')
+    plt.savefig('./knn_wine.png')
 
 
 def main():
