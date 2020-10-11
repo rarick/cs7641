@@ -64,7 +64,7 @@ def one_max():
 
 
 def four_peaks():
-    prob = mlrose.DiscreteOpt(length=256, fitness_fn=mlrose.FourPeaks(0.1))
+    prob = mlrose.DiscreteOpt(length=512, fitness_fn=mlrose.FourPeaks())
     prob.set_mimic_fast_mode(True)
     return prob
 
@@ -94,6 +94,7 @@ def rhc_results(restart_nums=[4, 8, 16, 32, 64]):
         mlrose.random_hill_climb(problem(),
                                  max_attempts=64,
                                  restarts=restarts,
+                                 random_state=0,
                                  curve=True)
 
     knapsack_trial = trial(knapsack)
@@ -117,6 +118,7 @@ def sa_results(decays=[0.95, 0.975, 0.99, 0.995, 0.999]):
         mlrose.simulated_annealing(problem(),
                                    schedule=mlrose.GeomDecay(decay=decay),
                                    max_attempts=64,
+                                   random_state=0,
                                    curve=True)
 
     knapsack_trial = trial(knapsack)
@@ -139,6 +141,7 @@ def ga_results(pop_sizes=[64, 128, 256, 512, 1024]):
     trial = lambda problem: lambda pop_size: \
         mlrose.genetic_alg(problem(),
                            pop_size=pop_size,
+                           random_state=0,
                            curve=True)
 
     knapsack_trial = trial(knapsack)
@@ -162,6 +165,7 @@ def mimic_results(pop_sizes=[64, 128, 256, 512, 1024]):
         mlrose.mimic(problem(),
                      pop_size=pop_size,
                      keep_pct=0.4,
+                     random_state=0,
                      curve=True)
 
     knapsack_trial = trial(knapsack)

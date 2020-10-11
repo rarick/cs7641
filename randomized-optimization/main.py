@@ -2,7 +2,8 @@
 
 import numpy as np
 import pandas as pd
-import trials as tr
+import bitstrings as bit
+import neural_net as nn
 
 from matplotlib import pyplot as plt
 
@@ -11,7 +12,8 @@ np.random.seed(seed=1337)
 
 
 def main():
-    tr.run_trials()
+    # bit.run_trials()
+    nn.run_trials()
 
 
 if __name__ == '__main__':
