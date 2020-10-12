@@ -2,26 +2,52 @@ import mlrose_hiive as mlrose
 import numpy as np
 import pandas as pd
 
+from pathlib import Path
+from matplotlib import pyplot as plt
 from timeit import default_timer as timer
 from functools import wraps
 
 
-def run_trials():
+outputs_path = Path('./outputs')
+outputs_path.mkdir(parents=True, exist_ok=True)
+
+
+def run_trials(to_csv=True, gen_plots=True):
+
+    def save_results(knap, om, fp, prefix):
+        if not to_csv:
+            return
+        knap.to_csv(outputs_path/f'{prefix}_knap.csv')
+        om.to_csv(outputs_path/f'{prefix}_om.csv')
+        fp.to_csv(outputs_path/f'{prefix}_fp.csv')
+
     print('#### Randomized Hill Climbing ####')
-    get_results(rhc_results, ['restarts'])
+    results = get_results(rhc_results, ['restarts'])
+    save_results(*results, 'rhc')
     print()
 
     print('#### Simulated Annealing ####')
-    get_results(sa_results, ['decay'])
+    results = get_results(sa_results, ['decay'])
+    save_results(*results, 'sa')
     print()
 
     print('#### Genetic Algorithm ####')
-    get_results(ga_results, ['pop_size'])
+    results = get_results(ga_results, ['pop_size'])
+    save_results(*results, 'ga')
     print()
 
     print('#### MIMIC ####')
-    get_results(mimic_results, ['pop_size'])
+    results = get_results(mimic_results, ['pop_size'])
+    save_results(*results, 'mimic')
     print()
+
+    if gen_plots:
+        gen_report_plots()
+
+
+def gen_report_plots():
+    pass
+
 
 
 def get_results(results_func, extra_columns=[]):
@@ -44,6 +70,8 @@ def get_results(results_func, extra_columns=[]):
     print('\nFour peaks (Genetic)')
     fp_df = results_to_df(fp)
     print(fp_df)
+
+    return knapsack_df, om_df, fp_df
 
 
 _knap_weights = list(range(1, 65))
