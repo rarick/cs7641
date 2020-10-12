@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 
 
 datasets_path = Path('../datasets')
+outputs_path = Path('./outputs')
 
 
 def fetch_data():
@@ -33,19 +34,28 @@ def fetch_data():
     return x_train, x_test, y_train, y_test
 
 
-def run_trials():
+def run_trials(to_csv=True):
     data = fetch_data()
 
-    print('#### Randomized Hill Climbing ####')
-    get_results(rhc_nn, data, ['restarts'])
-    print()
+    def save_results(df, prefix):
+        if not to_csv:
+            return
 
-    print('#### Simulated Annealing ####')
-    get_results(sa_nn, data, ['decay'])
-    print()
+        df.to_csv(outputs_path/f'{prefix}_nn.csv')
+
+    # print('#### Randomized Hill Climbing ####')
+    # df = get_results(rhc_nn, data, ['restarts'])
+    # save_results(df, 'rhc')
+    # print()
+
+    # print('#### Simulated Annealing ####')
+    # df = get_results(sa_nn, data, ['decay'])
+    # save_results(df, 'sa')
+    # print()
 
     print('#### Genetic Algorithm ####')
-    get_results(ga_nn, data, ['pop_size'])
+    df = get_results(ga_nn, data, ['pop_size'])
+    save_results(df, 'ga')
     print()
 
 
@@ -58,6 +68,7 @@ def get_results(nn_func, data, extra_columns=[]):
         results, columns=[*extra_columns, *common_col])
 
     print(df)
+    return df
 
 
 def run_nn(x_train, x_test, y_train, y_test, nn, **kwargs):
@@ -133,6 +144,7 @@ def ga_nn(data):
                                   max_iters=1000,
                                   learning_rate=0.001,
                                   early_stopping=True,
+                                  max_attempts=100,
                                   pop_size=pop_size,
                                   clip_max=5,
                                   random_state=0,

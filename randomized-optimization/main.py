@@ -9,8 +9,8 @@ np.random.seed(seed=1337)
 
 
 def main():
-    bit.run_trials(to_csv=True, gen_plots=True)
-    # nn.run_trials()
+    bit.run_trials(to_csv=True)
+    # nn.run_trials(to_csv=True)
 
 
 if __name__ == '__main__':

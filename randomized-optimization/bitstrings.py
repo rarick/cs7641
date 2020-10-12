@@ -12,7 +12,32 @@ outputs_path = Path('./outputs')
 outputs_path.mkdir(parents=True, exist_ok=True)
 
 
-def run_trials(to_csv=True, gen_plots=True):
+class ColorPopper(object):
+    def __init__(self):
+        self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+    def pop(self):
+        return self.colors.pop(0)
+
+
+def plot_results(rhc, sa, ga, mimic, prefix, title):
+    colors = ColorPopper()
+
+    plt.plot(rhc, label='RHC', color=colors.pop())
+    plt.plot(sa, label='SA', color=colors.pop())
+    plt.plot(ga, label='GA', color=colors.pop())
+    plt.plot(mimic, label='MIMIC', color=colors.pop())
+
+    median_len = np.median([len(rhc), len(sa), len(ga), len(mimic)])
+    plt.title(title)
+    plt.grid()
+    plt.xlim(left=0, right=median_len)
+    plt.ylim(bottom=0)
+    plt.legend(loc='lower right')
+    plt.savefig(outputs_path/f'{prefix}.png')
+
+
+def run_trials(to_csv=True):
 
     def save_results(knap, om, fp, prefix):
         if not to_csv:
@@ -22,32 +47,28 @@ def run_trials(to_csv=True, gen_plots=True):
         fp.to_csv(outputs_path/f'{prefix}_fp.csv')
 
     print('#### Randomized Hill Climbing ####')
-    results = get_results(rhc_results, ['restarts'])
-    save_results(*results, 'rhc')
+    rhc = get_results(rhc_results, ['restarts'])
+    save_results(*rhc[:3], 'rhc')
     print()
 
     print('#### Simulated Annealing ####')
-    results = get_results(sa_results, ['decay'])
-    save_results(*results, 'sa')
+    sa = get_results(sa_results, ['decay'])
+    save_results(*sa[:3], 'sa')
     print()
 
     print('#### Genetic Algorithm ####')
-    results = get_results(ga_results, ['pop_size'])
-    save_results(*results, 'ga')
+    ga = get_results(ga_results, ['pop_size'])
+    save_results(*ga[:3], 'ga')
     print()
 
     print('#### MIMIC ####')
-    results = get_results(mimic_results, ['pop_size'])
-    save_results(*results, 'mimic')
+    mimic = get_results(mimic_results, ['pop_size'])
+    save_results(*mimic[:3], 'mimic')
     print()
 
-    if gen_plots:
-        gen_report_plots()
-
-
-def gen_report_plots():
-    pass
-
+    plot_results(rhc[3], sa[3], ga[3], mimic[3], 'knap', 'Knapsack Learning Curves')
+    plot_results(rhc[4], sa[4], ga[4], mimic[4], 'om', 'One Max Learning Curves')
+    plot_results(rhc[5], sa[5], ga[5], mimic[5], 'fp', 'Four Peaks Learning Curves')
 
 
 def get_results(results_func, extra_columns=[]):
@@ -71,7 +92,9 @@ def get_results(results_func, extra_columns=[]):
     fp_df = results_to_df(fp)
     print(fp_df)
 
-    return knapsack_df, om_df, fp_df
+    get_curve = lambda result: result[-1]['fitness_curve']
+
+    return knapsack_df, om_df, fp_df, get_curve(knapsack), get_curve(om), get_curve(fp)
 
 
 _knap_weights = list(range(1, 65))
@@ -137,7 +160,7 @@ def rhc_results(restart_nums=[4, 8, 16, 32, 64]):
     return knapsack_res, om_res, fp_res
 
 
-def sa_results(decays=[0.95, 0.975, 0.99, 0.995, 0.999]):
+def sa_results(decays=[0.5, 0.95, 0.975, 0.99, 0.995]):
     knapsack_res = []
     om_res = []
     fp_res = []
