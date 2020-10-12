@@ -20,9 +20,12 @@ class ColorPopper(object):
         return self.colors.pop(0)
 
 
+_plot_num = 0
 def plot_results(rhc, sa, ga, mimic, prefix, title):
     colors = ColorPopper()
 
+    plt.figure(_plot_num)
+    _plot_num += 1
     plt.plot(rhc, label='RHC', color=colors.pop())
     plt.plot(sa, label='SA', color=colors.pop())
     plt.plot(ga, label='GA', color=colors.pop())
