@@ -43,15 +43,15 @@ def run_trials(to_csv=True):
 
         df.to_csv(outputs_path/f'{prefix}_nn.csv')
 
-    # print('#### Randomized Hill Climbing ####')
-    # df = get_results(rhc_nn, data, ['restarts'])
-    # save_results(df, 'rhc')
-    # print()
+    print('#### Randomized Hill Climbing ####')
+    df = get_results(rhc_nn, data, ['restarts'])
+    save_results(df, 'rhc')
+    print()
 
-    # print('#### Simulated Annealing ####')
-    # df = get_results(sa_nn, data, ['decay'])
-    # save_results(df, 'sa')
-    # print()
+    print('#### Simulated Annealing ####')
+    df = get_results(sa_nn, data, ['decay'])
+    save_results(df, 'sa')
+    print()
 
     print('#### Genetic Algorithm ####')
     df = get_results(ga_nn, data, ['pop_size'])
