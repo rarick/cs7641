@@ -197,11 +197,6 @@ def split_reduced(reduced):
     return x, y
 
 
-def run_tsne(x):
-    reduced = sklearn.manifold.TSNE(n_components=2).fit_transform(x)
-    return split_reduced(reduced)
-
-
 def run_pca(x):
     reduced = sklearn.decomposition.PCA(n_components=2).fit_transform(x)
     return split_reduced(reduced)
