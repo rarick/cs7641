@@ -73,20 +73,20 @@ def run():
     wine, wine_y = fetch_data(datasets_path/'winequality-red.csv')
     heart, heart_y = fetch_data(datasets_path/'heart-failure.csv')
 
-    # get_kmeans_inertias(wine, 'wine')
-    # get_kmeans_inertias(heart, 'heart')
+    get_kmeans_inertias(wine, 'wine')
+    get_kmeans_inertias(heart, 'heart')
 
-    # get_gaussian_covariance(wine, 'wine')
-    # get_gaussian_covariance(heart, 'heart')
+    get_gaussian_covariance(wine, 'wine')
+    get_gaussian_covariance(heart, 'heart')
 
-    # get_reduce(wine, wine_y, 'wine')
-    # get_reduce(heart, heart_y, 'heart')
+    get_reduce(wine, wine_y, 'wine')
+    get_reduce(heart, heart_y, 'heart')
 
-    # get_cluster_reduce(wine, 'wine', 5)
-    # get_cluster_reduce(heart, 'heart', 18)
+    get_cluster_reduce(wine, 'wine', 5)
+    get_cluster_reduce(heart, 'heart', 18)
 
-    # get_reduce_cluster(wine, 'wine', 5)
-    # get_reduce_cluster(heart, 'heart', 18)
+    get_reduce_cluster(wine, 'wine', 5)
+    get_reduce_cluster(heart, 'heart', 18)
 
     ###################
     ## Neural network
@@ -97,17 +97,17 @@ def run():
     heart_train_x, heart_test_x, heart_train_y, heart_test_y = \
         fetch_data_nn(datasets_path/'heart-failure.csv')
 
-    # get_reduce_train(wine_train_x,
-    #                  wine_test_x,
-    #                  wine_train_y,
-    #                  wine_test_y,
-    #                  'wine')
+    get_reduce_train(wine_train_x,
+                     wine_test_x,
+                     wine_train_y,
+                     wine_test_y,
+                     'wine')
 
-    # get_reduce_train(heart_train_x,
-    #                  heart_test_x,
-    #                  heart_train_y,
-    #                  heart_test_y,
-    #                  'heart')
+    get_reduce_train(heart_train_x,
+                     heart_test_x,
+                     heart_train_y,
+                     heart_test_y,
+                     'heart')
 
     get_reduce_cluster_train(wine_train_x,
                              wine_test_x,
