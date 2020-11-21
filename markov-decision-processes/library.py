@@ -1,10 +1,18 @@
 import gym
+import hiive.mdptoolbox as mdptoolbox
+import hiive.mdptoolbox.mdp
 import numpy as np
 
 from tqdm import tqdm
 
 
-def sample_mountain_car(num_positions=127, num_velocities=127, num_actions=7):
+def run():
+    P, R = sample_mountain_car()
+    solve_mdp(P, R)
+
+
+# def sample_mountain_car(num_positions=127, num_velocities=127, num_actions=7):
+def sample_mountain_car(num_positions=127, num_velocities=31, num_actions=7):
     num_states = num_positions*num_velocities
 
     env = gym.make('MountainCarContinuous-v0')
@@ -44,13 +52,13 @@ def sample_mountain_car(num_positions=127, num_velocities=127, num_actions=7):
 
     action_indices = np.digitize(actions, action_space, right=True)
 
-    position_indices = np.digitize(states[0], positions, right=True)
-    velocity_indices = np.digitize(states[1], velocities, right=True)
-    state_indices = num_positions*position_indices + velocity_indices
+    position_indices = np.digitize(states[:,0], positions, right=True)
+    velocity_indices = np.digitize(states[:,1], velocities, right=True)
+    state_indices = num_velocities*position_indices + velocity_indices
 
-    position_prime_indices = np.digitize(state_primes[0], positions, right=True)
-    velocity_prime_indices = np.digitize(state_primes[1], velocities, right=True)
-    state_prime_indices = num_positions*position_prime_indices + velocity_prime_indices
+    position_prime_indices = np.digitize(state_primes[:,0], positions, right=True)
+    velocity_prime_indices = np.digitize(state_primes[:,1], velocities, right=True)
+    state_prime_indices = num_velocities*position_prime_indices + velocity_prime_indices
 
     P = np.zeros((num_actions, num_states, num_states))
     R = np.zeros((num_states, num_actions))
@@ -62,9 +70,17 @@ def sample_mountain_car(num_positions=127, num_velocities=127, num_actions=7):
         P[a, s, sp] += 1
         R[s, a] = r
 
-    empty = P.sum(axis=2) == 0
-    P[empty, 0] = 1
+    # Should not be necessary, all S,A pairs were tried
+    # empty = P.sum(axis=2) == 0
+    # P[empty, 0] = 1
 
     assert (P.sum(axis=2) == 1).all()
 
     return P, R
+
+
+def solve_mdp(P, R):
+    vi = mdptoolbox.mdp.ValueIteration(P, R, 0.9)
+    vi.setVerbose()
+    vi.run()
+    print(vi.average_reward)

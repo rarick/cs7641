@@ -4,7 +4,7 @@ import library
 
 
 def main():
-    library.sample_mountain_car()
+    library.run()
 
 
 if __name__ == '__main__':
