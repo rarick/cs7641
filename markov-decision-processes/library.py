@@ -37,7 +37,7 @@ def sample_mountain_car(num_positions=127, num_velocities=31, num_actions=7):
     for position in tqdm(positions):
         for velocity in velocities:
             for action in action_space:
-                env.state = (position, velocity)
+                env.state[:] = (position, velocity)
                 new_state, reward, done, _ = env.step([action])
 
                 states.append((position, velocity))
@@ -80,6 +80,7 @@ def sample_mountain_car(num_positions=127, num_velocities=31, num_actions=7):
 
 
 def solve_mdp(P, R):
+    print('Value iterating')
     vi = mdptoolbox.mdp.ValueIteration(P, R, 0.9)
     vi.setVerbose()
     vi.run()
