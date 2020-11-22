@@ -4,7 +4,8 @@ import library
 
 
 def main():
-    library.run()
+    # library.run()
+    library.exploration_plots()
 
 
 if __name__ == '__main__':
