@@ -61,14 +61,14 @@ def exploration_plots():
     plt.figure()
     plt.title('Max V vs $\\epsilon min$')
     plt.xlabel('$\\epsilon min$')
-    plt.ylabel('performance')
+    plt.ylabel('Max V')
     plt.scatter(epsilon_mins, max_v)
     plt.savefig(f'outputs/epsilon_mins-max.png')
 
     plt.figure()
     plt.title('Mean V vs $\\epsilon min$')
     plt.xlabel('$\\epsilon min$')
-    plt.ylabel('performance')
+    plt.ylabel('Mean V')
     plt.scatter(epsilon_mins, mean_v)
     plt.savefig(f'outputs/epsilon_mins-mean.png')
 
@@ -136,6 +136,7 @@ def sample_mountain_car():
 
 
 def value_iteration(P, R):
+    np.random.seed(1337)
     print('Value iterating')
     start = timer()
     vi = mdptoolbox.mdp.ValueIteration(P, R, 0.99)
@@ -147,6 +148,7 @@ def value_iteration(P, R):
 
 
 def policy_iteration(P, R):
+    np.random.seed(1337)
     print('Policy iterating')
     start = timer()
     pi = mdptoolbox.mdp.PolicyIteration(P, R, 0.99, max_iter=200)
@@ -158,6 +160,7 @@ def policy_iteration(P, R):
 
 
 def q_learning(P, R, epsilon_min=0.2, epsilon_decay=0.9):
+    np.random.seed(1337)
     print('Q Learning')
     start = timer()
     ql = mdptoolbox.mdp.QLearning(P, R, 0.99,
@@ -175,6 +178,7 @@ def q_learning(P, R, epsilon_min=0.2, epsilon_decay=0.9):
 
 def get_performance_discrete(policy, P, R, num_trials=100):
     results = []
+    np.random.seed(1337)
     for k in range(num_trials):
         total_reward = 0
         state = np.random.randint(num_positions // 6 * num_velocities, num_positions // 4 * num_velocities)
@@ -228,3 +232,4 @@ def get_performance_continuous(policy, num_trials=100):
 
     print(f'Average total reward (continuous): {np.mean(trial_data)}')
     return np.mean(trial_data)
+
