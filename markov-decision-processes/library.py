@@ -141,4 +141,44 @@ def get_performance_discrete(policy, P, R, num_trials=100):
 
         results.append(total_reward)
 
-    print(np.mean(results))
+    print(f'Average total reward: {np.mean(results)}')
+
+
+def get_performance_continuous(policy, num_trials=100):
+    env = gym.make('MountainCarContinuous-v0')
+    env.reset()
+
+    num_states = num_positions*num_velocities
+    assert len(policy) == num_states
+
+    action_space = env.action_space
+    observation_space = env.observation_space
+
+    position_min, velocity_min = observation_space.low
+    position_max, velocity_max = observation_space.high
+
+    action_min, action_max = (action_space.low[0], action_space.high[0])
+
+    positions = np.linspace(position_min, position_max, num_positions)
+    velocities = np.linspace(velocity_min, velocity_max, num_velocities)
+    action_space = np.linspace(action_min, action_max, num_actions)
+
+    trial_data = []
+    for k in range(num_trials):
+        state = env.reset()
+        total_reward = 0
+        while True:
+            position_index = np.digitize(state[0], positions, right=True)
+            velocity_index = np.digitize(state[1], velocities, right=True)
+            state_index = num_velocities*position_index + velocity_index
+
+            action_index = policy[state_index]
+            action = action_space[action_index]
+            state, reward, done, _ = env.step([action])
+            total_reward += reward
+            if done:
+                break
+
+        trial_data.append(total_reward)
+
+    print(f'Average total reward: {np.mean(trial_data)}')
