@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 
 def run():
-    P, R = sample_mountain_car()
+    P, R = ()
 
     vi = value_iteration(P, R)
     print(vi.run_stats[-1])

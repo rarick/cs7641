@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 
-import library
+import car
+import forest
 
 
 def main():
-    # library.run()
-    library.exploration_plots()
+    # car.run()
+    # car.exploration_plots()
+
+    forest.run()
+    forest.exploration_plots()
 
 
 if __name__ == '__main__':
