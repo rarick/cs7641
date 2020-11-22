@@ -3,16 +3,23 @@ import hiive.mdptoolbox as mdptoolbox
 import hiive.mdptoolbox.mdp
 import numpy as np
 
+from timeit import default_timer as timer
 from tqdm import tqdm
 
 
 def run():
     P, R = sample_mountain_car()
-    solve_mdp(P, R)
+
+    vi = value_iteration(P, R)
+    print(vi.run_stats[-1])
+    pi = policy_iteration(P, R)
+    print(pi.run_stats[-1])
+    ql = q_learning(P, R)
+    print(ql.run_stats[-1])
 
 
-# def sample_mountain_car(num_positions=127, num_velocities=127, num_actions=7):
-def sample_mountain_car(num_positions=127, num_velocities=31, num_actions=7):
+def sample_mountain_car(num_positions=127, num_velocities=63, num_actions=15):
+# def sample_mountain_car(num_positions=127, num_velocities=31, num_actions=7):
     num_states = num_positions*num_velocities
 
     env = gym.make('MountainCarContinuous-v0')
@@ -79,9 +86,34 @@ def sample_mountain_car(num_positions=127, num_velocities=31, num_actions=7):
     return P, R
 
 
-def solve_mdp(P, R):
+def value_iteration(P, R):
     print('Value iterating')
+    start = timer()
     vi = mdptoolbox.mdp.ValueIteration(P, R, 0.9)
     vi.setVerbose()
     vi.run()
-    print(vi.average_reward)
+    end = timer()
+    print(end - start)
+    return vi
+
+
+def policy_iteration(P, R):
+    print('Policy iterating')
+    start = timer()
+    pi = mdptoolbox.mdp.PolicyIteration(P, R, 0.9)
+    pi.setVerbose()
+    pi.run()
+    end = timer()
+    print(end - start)
+    return pi
+
+
+def q_learning(P, R):
+    print('Q Learning')
+    start = timer()
+    ql = mdptoolbox.mdp.QLearning(P, R, 0.9, alpha_decay=0.999, alpha_min=0.5, epsilon_min=0.2, epsilon_decay=0.999)
+    ql.setVerbose()
+    ql.run()
+    end = timer()
+    print(end - start)
+    return ql
