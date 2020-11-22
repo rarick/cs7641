@@ -11,9 +11,11 @@ from tqdm import tqdm
 # num_velocities=128
 # num_actions=8
 
-num_positions=63
-num_velocities=63
-num_actions=8
+num_positions=128
+num_velocities=16
+num_actions=16
+
+num_states = num_positions*num_velocities
 
 
 def run():
@@ -21,21 +23,19 @@ def run():
 
     vi = value_iteration(P, R)
     print(vi.run_stats[-1])
-    get_performance(vi.policy)
+    get_performance_discrete(vi.policy, P, R)
 
     pi = policy_iteration(P, R)
     print(pi.run_stats[-1])
-    get_performance(pi.policy)
+    get_performance_discrete(pi.policy, P, R)
 
     ql = q_learning(P, R)
     print(ql.run_stats[-1])
-    get_performance(ql.policy)
+    get_performance_discrete(ql.policy, P, R)
 
 
 # def sample_mountain_car(num_positions=127, num_velocities=63, num_actions=15):
 def sample_mountain_car():
-    num_states = num_positions*num_velocities
-
     env = gym.make('MountainCarContinuous-v0')
     env.reset()
 
@@ -99,7 +99,7 @@ def sample_mountain_car():
 def value_iteration(P, R):
     print('Value iterating')
     start = timer()
-    vi = mdptoolbox.mdp.ValueIteration(P, R, 0.9)
+    vi = mdptoolbox.mdp.ValueIteration(P, R, 0.99)
     vi.setVerbose()
     vi.run()
     end = timer()
@@ -110,7 +110,7 @@ def value_iteration(P, R):
 def policy_iteration(P, R):
     print('Policy iterating')
     start = timer()
-    pi = mdptoolbox.mdp.PolicyIteration(P, R, 0.9)
+    pi = mdptoolbox.mdp.PolicyIteration(P, R, 0.99, max_iter=200)
     pi.setVerbose()
     pi.run()
     end = timer()
@@ -121,7 +121,7 @@ def policy_iteration(P, R):
 def q_learning(P, R):
     print('Q Learning')
     start = timer()
-    ql = mdptoolbox.mdp.QLearning(P, R, 0.9, alpha_decay=0.999, alpha_min=0.1, epsilon_min=0.2, epsilon_decay=0.999)
+    ql = mdptoolbox.mdp.QLearning(P, R, 0.99, n_iter=20000, alpha_decay=0.999, alpha_min=0.1, epsilon_min=0.2, epsilon_decay=0.999)
     ql.setVerbose()
     ql.run()
     end = timer()
@@ -129,43 +129,16 @@ def q_learning(P, R):
     return ql
 
 
-def get_performance(policy, num_trials=10):
-    env = gym.make('MountainCarContinuous-v0')
-    env.reset()
-
-    num_states = num_positions*num_velocities
-    assert len(policy) == num_states
-
-    action_space = env.action_space
-    observation_space = env.observation_space
-
-    position_min, velocity_min = observation_space.low
-    position_max, velocity_max = observation_space.high
-
-    action_min, action_max = (action_space.low[0], action_space.high[0])
-
-    positions = np.linspace(position_min, position_max, num_positions)
-    velocities = np.linspace(velocity_min, velocity_max, num_velocities)
-    action_space = np.linspace(action_min, action_max, num_actions)
-
-    trial_data = []
+def get_performance_discrete(policy, P, R, num_trials=100):
+    results = []
     for k in range(num_trials):
-        env = gym.make('MountainCarContinuous-v0')
-        state = env.reset()
         total_reward = 0
-        while True:
-            position_index = np.digitize(state[0], positions, right=True)
-            velocity_index = np.digitize(state[1], velocities, right=True)
-            state_index = num_velocities*position_index + velocity_index
+        state = np.random.randint(num_positions // 6 * num_velocities, num_positions // 4 * num_velocities)
+        for step in range(200):
+            action = policy[state]
+            total_reward += R[state, action]
+            state = np.argmax(P[action, state])
 
-            action_index = policy[state_index]
-            action = action_space[action_index]
-            print(f'{(state, action)}')
-            state, reward, done, _ = env.step([action])
-            total_reward += reward
-            if done:
-                break
+        results.append(total_reward)
 
-        trial_data.append(total_reward)
-
-    print(trial_data)
+    print(np.mean(results))
