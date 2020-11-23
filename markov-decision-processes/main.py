@@ -8,8 +8,8 @@ def main():
     # car.run()
     # car.exploration_plots()
 
-    forest.run()
-    forest.exploration_plots()
+    # forest.run()
+    forest.iteration_plots()
 
 
 if __name__ == '__main__':
