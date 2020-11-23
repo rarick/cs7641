@@ -66,9 +66,9 @@ def iteration_plots():
 def value_iteration(P, R):
     np.random.seed(1337)
     print('Value iterating')
-    start = timer()
     vi = mdptoolbox.mdp.ValueIteration(P, R, 0.99)
     # vi.setVerbose()
+    start = timer()
     vi.run()
     end = timer()
     print(end - start)
@@ -78,9 +78,9 @@ def value_iteration(P, R):
 def policy_iteration(P, R):
     np.random.seed(1337)
     print('Policy iterating')
-    start = timer()
     pi = mdptoolbox.mdp.PolicyIteration(P, R, 0.99, max_iter=1000)
     # pi.setVerbose()
+    start = timer()
     pi.run()
     end = timer()
     print(end - start)
@@ -90,7 +90,6 @@ def policy_iteration(P, R):
 def q_learning(P, R, epsilon_min=0.2, epsilon_decay=0.9):
     np.random.seed(1337)
     print('Q Learning')
-    start = timer()
     ql = mdptoolbox.mdp.QLearning(P, R, 0.99,
                                   n_iter=20000,
                                   alpha_decay=0.999,
@@ -98,6 +97,7 @@ def q_learning(P, R, epsilon_min=0.2, epsilon_decay=0.9):
                                   epsilon_min=epsilon_min,
                                   epsilon_decay=epsilon_decay)
     # ql.setVerbose()
+    start = timer()
     ql.run()
     end = timer()
     print(end - start)
