@@ -87,13 +87,13 @@ def policy_iteration(P, R):
     return pi
 
 
-def q_learning(P, R, epsilon_min=0.2, epsilon_decay=0.9):
+def q_learning(P, R, epsilon_min=0.1, epsilon_decay=0.999):
     np.random.seed(1337)
     print('Q Learning')
     ql = mdptoolbox.mdp.QLearning(P, R, 0.99,
                                   n_iter=20000,
                                   alpha_decay=0.999,
-                                  alpha_min=0.6,
+                                  alpha_min=0.01,
                                   epsilon_min=epsilon_min,
                                   epsilon_decay=epsilon_decay)
     # ql.setVerbose()

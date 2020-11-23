@@ -1,0 +1,5 @@
+matplotlib==3.3.2
+tqdm==4.45.0
+numpy==1.18.4
+gym==0.17.3
+mdptoolbox_hiive==4.0.3.1

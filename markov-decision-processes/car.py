@@ -8,13 +8,17 @@ from timeit import default_timer as timer
 from tqdm import tqdm
 
 
+# num_positions=32
+# num_velocities=8
+# num_actions=4
+
 num_positions=128
 num_velocities=16
 num_actions=8
 
-num_positions=256
-num_velocities=32
-num_actions=16
+# num_positions=256
+# num_velocities=32
+# num_actions=16
 
 num_states = num_positions*num_velocities
 
@@ -34,6 +38,8 @@ def run():
 
     ql = q_learning(P, R)
     print(ql.run_stats[-1])
+    with open('outputs/car-q-stats.txt', 'w') as file:
+        file.write(str(ql.run_stats))
     get_performance_discrete(ql.policy, P, R)
     get_performance_continuous(ql.policy)
 
@@ -56,21 +62,89 @@ def exploration_plots():
     plt.xlabel('$\\epsilon min$')
     plt.ylabel('performance')
     plt.scatter(epsilon_mins, performance)
-    plt.savefig(f'outputs/epsilon_mins-performance.png')
+    plt.savefig(f'outputs/car-epsilon_mins-performance.png')
 
     plt.figure()
     plt.title('Max V vs $\\epsilon min$')
     plt.xlabel('$\\epsilon min$')
     plt.ylabel('Max V')
     plt.scatter(epsilon_mins, max_v)
-    plt.savefig(f'outputs/epsilon_mins-max.png')
+    plt.savefig(f'outputs/car-epsilon_mins-max.png')
 
     plt.figure()
     plt.title('Mean V vs $\\epsilon min$')
     plt.xlabel('$\\epsilon min$')
     plt.ylabel('Mean V')
     plt.scatter(epsilon_mins, mean_v)
-    plt.savefig(f'outputs/epsilon_mins-mean.png')
+    plt.savefig(f'outputs/car-epsilon_mins-mean.png')
+
+
+def iteration_plots():
+    P, R = sample_mountain_car()
+
+    iterations = [100, 200, 500, 1000, 2000]
+    performance = []
+    vi_time = []
+    vi_perf_con = []
+    vi_perf_disc = []
+    pi_time = []
+    pi_perf_con = []
+    pi_perf_disc = []
+    ql_time = []
+    ql_perf_con = []
+    ql_perf_disc = []
+    for iteration in iterations:
+        print(f'Iteration: {iteration}')
+        vi = value_iteration(P, R, max_iterations=iteration)
+        vi_time.append(vi.run_stats[-1]['Time'])
+        vi_perf_disc.append(get_performance_discrete(vi.policy, P, R))
+        vi_perf_con.append(get_performance_continuous(vi.policy))
+
+        pi = policy_iteration(P, R, max_iterations=iteration)
+        pi_time.append(pi.run_stats[-1]['Time'])
+        pi_perf_disc.append(get_performance_discrete(pi.policy, P, R))
+        pi_perf_con.append(get_performance_continuous(pi.policy))
+
+        ql = q_learning(P, R, max_iterations=100*iteration)
+        ql_time.append(ql.run_stats[-1]['Time'])
+        ql_perf_disc.append(get_performance_discrete(ql.policy, P, R))
+        ql_perf_con.append(get_performance_continuous(ql.policy))
+
+    plt.figure()
+    fig, ax = plt.subplots()
+    ax.set_title('Iterations vs performance (discrete)')
+    ax.set_xlabel('iterations (x100 for Q-Learning)')
+    ax.set_ylabel('performance')
+    ax.grid()
+    ax.scatter(iterations, vi_perf_disc, label='value iteration', alpha=0.6, marker='^')
+    ax.scatter(iterations, pi_perf_disc, label='policy iteration', alpha=0.6, marker='s')
+    ax.scatter(iterations, ql_perf_disc, label='q-learning', alpha=0.6)
+    ax.legend(loc='best')
+    plt.savefig('outputs/car-iter-perf-disc.png')
+
+    plt.figure()
+    fig, ax = plt.subplots()
+    ax.set_title('Iterations vs performance (continuous)')
+    ax.set_xlabel('iterations (x100 for Q-Learning)')
+    ax.set_ylabel('performance')
+    ax.grid()
+    ax.scatter(iterations, vi_perf_con, label='value iteration', alpha=0.6, marker='^')
+    ax.scatter(iterations, pi_perf_con, label='policy iteration', alpha=0.6, marker='s')
+    ax.scatter(iterations, ql_perf_con, label='q-learning', alpha=0.6)
+    ax.legend(loc='best')
+    plt.savefig('outputs/car-iter-perf-con.png')
+
+    plt.figure()
+    fig, ax = plt.subplots()
+    ax.set_title('Iterations vs time')
+    ax.set_xlabel('iterations (x100 for Q-Learning)')
+    ax.set_ylabel('time (s)')
+    ax.grid()
+    ax.scatter(iterations, vi_time, label='value iteration', alpha=0.6, marker='^')
+    ax.scatter(iterations, pi_time, label='policy iteration', alpha=0.6, marker='s')
+    ax.scatter(iterations, ql_time, label='q-learning', alpha=0.6)
+    ax.legend(loc='best')
+    plt.savefig('outputs/car-iter-time.png')
 
 
 # def sample_mountain_car(num_positions=127, num_velocities=63, num_actions=15):
@@ -135,10 +209,10 @@ def sample_mountain_car():
     return P, R
 
 
-def value_iteration(P, R):
+def value_iteration(P, R, max_iterations=10000):
     np.random.seed(1337)
     print('Value iterating')
-    vi = mdptoolbox.mdp.ValueIteration(P, R, 0.99)
+    vi = mdptoolbox.mdp.ValueIteration(P, R, 0.99, max_iter=max_iterations)
     vi.setVerbose()
     start = timer()
     vi.run()
@@ -147,10 +221,10 @@ def value_iteration(P, R):
     return vi
 
 
-def policy_iteration(P, R):
+def policy_iteration(P, R, max_iterations=1000):
     np.random.seed(1337)
     print('Policy iterating')
-    pi = mdptoolbox.mdp.PolicyIteration(P, R, 0.99, max_iter=500)
+    pi = mdptoolbox.mdp.PolicyIteration(P, R, 0.99, max_iter=max_iterations)
     pi.setVerbose()
     start = timer()
     pi.run()
@@ -159,13 +233,13 @@ def policy_iteration(P, R):
     return pi
 
 
-def q_learning(P, R, epsilon_min=0.2, epsilon_decay=0.9):
+def q_learning(P, R, epsilon_min=0.2, epsilon_decay=0.9, max_iterations=200000):
     np.random.seed(1337)
     print('Q Learning')
     ql = mdptoolbox.mdp.QLearning(P, R, 0.99,
-                                  n_iter=200000,
+                                  n_iter=max_iterations,
                                   alpha_decay=0.999,
-                                  alpha_min=0.1,
+                                  alpha_min=0.01,
                                   epsilon_min=epsilon_min,
                                   epsilon_decay=epsilon_decay)
     ql.setVerbose()
@@ -184,7 +258,10 @@ def get_performance_discrete(policy, P, R, num_trials=100):
         state = np.random.randint(num_positions // 6 * num_velocities, num_positions // 4 * num_velocities)
         for step in range(200):
             action = policy[state]
-            total_reward += R[state, action]
+            reward = R[state, action]
+            total_reward += reward
+            if reward > 0:
+                break
             state = np.argmax(P[action, state])
 
         results.append(total_reward)

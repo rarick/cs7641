@@ -6,10 +6,11 @@ import forest
 
 def main():
     # car.run()
-    # car.exploration_plots()
+    car.exploration_plots()
+    car.iteration_plots()
 
     # forest.run()
-    forest.iteration_plots()
+    # forest.iteration_plots()
 
 
 if __name__ == '__main__':
